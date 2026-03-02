@@ -892,20 +892,6 @@
                             {/* ===== 리스 탭 ===== */}
                             {activeTab === 'lease' && (
                                 <div className="tab-content">
-                                    <div className="lease-type-bar">
-                                        <button
-                                            className={'lease-type-btn' + (leaseType === 'operating' ? ' active' : '')}
-                                            onClick={() => setLeaseType('operating')}
-                                        >
-                                            운용리스
-                                        </button>
-                                        <button
-                                            className={'lease-type-btn' + (leaseType === 'finance' ? ' active' : '')}
-                                            onClick={() => setLeaseType('finance')}
-                                        >
-                                            금융리스
-                                        </button>
-                                    </div>
 
                                     <div className="form-group">
                                         <label>차량가격</label>
@@ -1020,10 +1006,6 @@
                                                 <div className="loan-row">
                                                     <span>총 납입금액</span>
                                                     <span className="value">{fmtWon(leaseResult.totalPayment)} 원</span>
-                                                </div>
-                                                <div className="loan-row">
-                                                    <span>리스 유형</span>
-                                                    <span className="value">{leaseType === 'operating' ? '운용리스' : '금융리스'}</span>
                                                 </div>
                                                 <p style={{fontSize: '11px', color: '#adb5bd', marginTop: '10px', whiteSpace: 'nowrap'}}>※ 실제 금리 및 조건은 금융사별로 상이하며, 본 계산은 참고용입니다.</p>
                                             </div>
