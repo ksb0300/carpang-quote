@@ -499,6 +499,56 @@
             .main-wrapper { box-shadow: none; }
             .calc-btn, .schedule-toggle, .tab-bar, .apply-btns { display: none; }
         }
+
+        /* 초기화 버튼 */
+        .reset-btn {
+            background: #f1f3f5; color: #495057; border: 1px solid #dee2e6;
+            border-radius: 8px; padding: 8px 18px; font-size: 13px;
+            cursor: pointer; font-weight: 600; transition: all 0.2s;
+        }
+        .reset-btn:hover { background: #e9ecef; }
+
+        /* 감면 체크박스 영역 */
+        .exempt-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 12px; flex-wrap: wrap;
+        }
+        .exempt-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #3498db; }
+        .exempt-label { font-size: 14px; font-weight: 600; color: #2c3e50; cursor: pointer; }
+        .exempt-info-btn {
+            background: none; border: 1px solid #3498db; color: #3498db;
+            border-radius: 50%; width: 20px; height: 20px; font-size: 11px;
+            font-weight: 700; cursor: pointer; line-height: 1; padding: 0;
+        }
+        .exempt-input-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .exempt-input-wrap input { flex: 1; }
+
+        /* 팝업 모달 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-box {
+            background: #fff; border-radius: 16px; padding: 28px;
+            max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { margin: 0 0 16px; font-size: 17px; color: #2c3e50; }
+        .modal-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .modal-table th {
+            background: #3498db; color: #fff; padding: 9px 12px;
+            text-align: left; font-weight: 600;
+        }
+        .modal-table td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; }
+        .modal-table tr:last-child td { border-bottom: none; }
+        .modal-table tr:nth-child(even) td { background: #f8f9fa; }
+        .modal-note { font-size: 12px; color: #888; margin-top: 12px; }
+        .modal-close {
+            display: block; width: 100%; margin-top: 18px; padding: 11px;
+            background: #3498db; color: #fff; border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+        }
+        .modal-close:hover { background: #2980b9; }
     </style>
 </head>
 <body>
@@ -542,6 +592,9 @@
             const [leaseRate, setLeaseRate] = React.useState('9');
             const [leaseMonths, setLeaseMonths] = React.useState('60');
             const [showLeaseSchedule, setShowLeaseSchedule] = React.useState(false);
+            const [taxExempt, setTaxExempt] = React.useState(false);
+            const [customTransferFee, setCustomTransferFee] = React.useState('');
+            const [showExemptModal, setShowExemptModal] = React.useState(false);
 
             // 견적 상수
             const FIXED_SALE_FEE = 440000;
@@ -551,7 +604,7 @@
             const calculateQuote = () => {
                 const price = Number(carPrice);
                 if (!price) return null;
-                const transferFee = Math.floor(price * TRANSFER_RATE);
+                const transferFee = taxExempt ? (Number(customTransferFee) || 0) : Math.floor(price * TRANSFER_RATE);
                 const insurance = Number(insurancePrice) || 0;
                 const total = price + FIXED_SALE_FEE + transferFee + insurance;
                 return { carPrice: price, saleFee: FIXED_SALE_FEE, transferFee, insurance, total };
@@ -595,7 +648,8 @@
 
                 const advanceAmount = Number(leaseAdvance) || 0;
                 const residualAmount = leaseType === 'operating' ? carP * (Number(leaseResidual) / 100) : 0;
-                const leasePrincipal = carP - advanceAmount;
+                const transferFee = taxExempt ? (Number(customTransferFee) || 0) : carP * 0.075;
+                const leasePrincipal = carP - advanceAmount + transferFee;
                 const r = annualRate / 100 / 12;
 
                 const compoundFactor = Math.pow(1 + r, n);
@@ -634,6 +688,25 @@
             const loanResult = calculateLoan();
             const leaseResult = calculateLease();
 
+            const handleReset = () => {
+                setCarPrice('');
+                setInsurancePrice('');
+                setLoanAmount('0');
+                setInterestRate('0');
+                setLoanMonths('60');
+                setLeaseCarPrice('0');
+                setLeaseAdvance('0');
+                setLeaseResidual('30');
+                setLeaseRate('9');
+                setLeaseMonths('60');
+                setTaxExempt(false);
+                setCustomTransferFee('');
+                setShowSchedule(false);
+                setShowLeaseSchedule(false);
+                setShowBank(false);
+                setActiveTab('installment');
+            };
+
             const applyToLoan = () => {
                 if (quoteResult) {
                     setLoanAmount(String(quoteResult.total));
@@ -651,6 +724,35 @@
 
             return (
                 <div className="main-wrapper">
+
+                    {/* 취등록세 감면 팝업 모달 */}
+                    {showExemptModal && (
+                        <div className="modal-overlay" onClick={() => setShowExemptModal(false)}>
+                            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+                                <h3>취득세 감면 대상 안내</h3>
+                                <table className="modal-table">
+                                    <thead>
+                                        <tr>
+                                            <th>구분</th>
+                                            <th>감면 내용</th>
+                                            <th>한도 / 구조</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>전기차</td><td>취득세 감면</td><td><strong>140만원 공제</strong></td></tr>
+                                        <tr><td>다자녀 (3명 이상)</td><td>취득세 감면</td><td><strong>140만원 공제</strong></td></tr>
+                                        <tr><td>다자녀 (2명)</td><td>취득세 감면</td><td><strong>50% 감면</strong></td></tr>
+                                        <tr><td>경차</td><td>취득세 감면</td><td><strong>75만원 공제</strong></td></tr>
+                                        <tr><td>장애인</td><td>취득세 면제</td><td><strong>전액 면제</strong></td></tr>
+                                        <tr><td>국가유공자</td><td>취득세 면제</td><td><strong>전액 면제</strong></td></tr>
+                                    </tbody>
+                                </table>
+                                <p className="modal-note">※ 중복되는 경우 더 유리한 조건 1개만 적용됩니다.</p>
+                                <button className="modal-close" onClick={() => setShowExemptModal(false)}>확인</button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* 헤더 */}
                     <div className="header">
                         <div className="logo-wrap" onClick={handleLogoTap} style={{cursor: 'pointer'}}>
@@ -669,6 +771,37 @@
                                 <div className="section-icon">$</div>
                                 차량 견적 계산
                             </div>
+
+                            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'12px'}}>
+                                <div className="exempt-row" style={{marginBottom:0}}>
+                                    <input
+                                        type="checkbox"
+                                        id="taxExempt"
+                                        className="exempt-checkbox"
+                                        checked={taxExempt}
+                                        onChange={(e) => setTaxExempt(e.target.checked)}
+                                    />
+                                    <label htmlFor="taxExempt" className="exempt-label">취등록세 감면대상</label>
+                                    <button className="exempt-info-btn" onClick={() => setShowExemptModal(true)}>?</button>
+                                </div>
+                                <button className="reset-btn" onClick={handleReset}>↺ 초기화</button>
+                            </div>
+
+                            {taxExempt && (
+                                <div className="exempt-input-wrap">
+                                    <label style={{fontSize:'13px', color:'#666', whiteSpace:'nowrap'}}>이전비 직접입력</label>
+                                    <div className="input-suffix" style={{flex:1}}>
+                                        <input
+                                            type="number"
+                                            value={customTransferFee}
+                                            onChange={(e) => setCustomTransferFee(e.target.value)}
+                                            placeholder="이전비 금액 입력"
+                                            inputMode="numeric"
+                                        />
+                                        <span className="suffix">원</span>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="form-group">
                                 <label>차량 가격</label>
@@ -710,7 +843,7 @@
                                         <span className="value">{quoteResult.saleFee.toLocaleString()} 원</span>
                                     </div>
                                     <div className="result-row">
-                                        <span className="label">이전비 (7.5%)</span>
+                                        <span className="label">이전비 {taxExempt ? '(직접입력)' : '(7.5%)'}</span>
                                         <span className="value">{quoteResult.transferFee.toLocaleString()} 원</span>
                                     </div>
                                     <div className="result-row sub-note">
@@ -999,14 +1132,6 @@
                                                         <span className="value">{fmtWon(leaseResult.residualAmount)} 원</span>
                                                     </div>
                                                 )}
-                                                <div className="loan-row">
-                                                    <span>총 이자</span>
-                                                    <span className="value">{fmtWon(leaseResult.totalInterest)} 원</span>
-                                                </div>
-                                                <div className="loan-row">
-                                                    <span>총 납입금액</span>
-                                                    <span className="value">{fmtWon(leaseResult.totalPayment)} 원</span>
-                                                </div>
                                                 <p style={{fontSize: '11px', color: '#adb5bd', marginTop: '10px', whiteSpace: 'nowrap'}}>※ 실제 금리 및 조건은 금융사별로 상이하며, 본 계산은 참고용입니다.</p>
                                             </div>
 
