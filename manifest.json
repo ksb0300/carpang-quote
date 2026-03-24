@@ -4,7 +4,7 @@
   "description": "CARPANG 차량 견적 및 할부/리스 계산기",
   "start_url": "./차량견적서A.html",
   "display": "standalone",
-  "orientation": "landscape",
+  "orientation": "any",
   "background_color": "#1a2a4a",
   "theme_color": "#1a2a4a",
   "icons": [
