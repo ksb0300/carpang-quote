@@ -560,6 +560,13 @@
             const [insurancePrice, setInsurancePrice] = React.useState('');
             const [showBank, setShowBank] = React.useState(false);
 
+            // 차량번호 검색
+            const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuw-AvO0VJfvESgdDIipzTUvGd66RR1ONo9XzgLvFI5FNgIQmgUHgtfDnxrRGiMNfoFQ/exec';
+            const [searchKeyword, setSearchKeyword] = React.useState('');
+            const [searchResults, setSearchResults] = React.useState(null);
+            const [searchLoading, setSearchLoading] = React.useState(false);
+            const [selectedCar, setSelectedCar] = React.useState(null);
+
             // 관리자 모드 (로고 3번 탭)
             const [adminMode, setAdminMode] = React.useState(false);
             const tapCount = React.useRef(0);
@@ -595,6 +602,38 @@
             const [taxExempt, setTaxExempt] = React.useState(false);
             const [customTransferFee, setCustomTransferFee] = React.useState('');
             const [showExemptModal, setShowExemptModal] = React.useState(false);
+
+            // 차량번호 검색 함수
+            const searchCar = () => {
+                if (!searchKeyword || searchKeyword.length < 2) {
+                    alert('최소 2자리 이상 입력해주세요');
+                    return;
+                }
+                setSearchLoading(true);
+                setSelectedCar(null);
+                fetch(APPS_SCRIPT_URL + '?q=' + encodeURIComponent(searchKeyword))
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        setSearchResults(data);
+                        if (data.length === 1) {
+                            setSelectedCar(data[0]);
+                            var ins = String(data[0].insurance).replace(/[^0-9]/g, '');
+                            setInsurancePrice(ins);
+                        }
+                        setSearchLoading(false);
+                    })
+                    .catch(function() {
+                        alert('검색 실패: 네트워크를 확인해주세요');
+                        setSearchResults(null);
+                        setSearchLoading(false);
+                    });
+            };
+
+            const applyCar = (car) => {
+                setSelectedCar(car);
+                const ins = String(car.insurance).replace(/[^0-9]/g, '');
+                setInsurancePrice(ins);
+            };
 
             // 견적 상수
             const FIXED_SALE_FEE = 440000;
@@ -691,6 +730,9 @@
             const handleReset = () => {
                 setCarPrice('');
                 setInsurancePrice('');
+                setSearchKeyword('');
+                setSearchResults(null);
+                setSelectedCar(null);
                 setLoanAmount('0');
                 setInterestRate('0');
                 setLoanMonths('60');
@@ -802,6 +844,59 @@
                                     </div>
                                 </div>
                             )}
+
+                            {/* 차량번호 검색 */}
+                            <div className="form-group" style={{background: '#f0f4f8', padding: '12px', borderRadius: '10px', marginBottom: '12px'}}>
+                                <label style={{fontSize: '13px', fontWeight: '700', color: '#1a2a4a', marginBottom: '8px'}}>🔍 차량번호 검색</label>
+                                <div style={{display: 'flex', gap: '8px'}}>
+                                    <input
+                                        type="text"
+                                        value={searchKeyword}
+                                        onChange={(e) => setSearchKeyword(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && searchCar()}
+                                        placeholder="차량번호 뒤 4자리"
+                                        style={{flex: 1, padding: '10px 12px', border: '2px solid #d0d7e3', borderRadius: '8px', fontSize: '14px', outline: 'none'}}
+                                        inputMode="numeric"
+                                    />
+                                    <button
+                                        onClick={searchCar}
+                                        disabled={searchLoading}
+                                        style={{padding: '10px 18px', background: '#1a2a4a', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap'}}
+                                    >
+                                        {searchLoading ? '검색중...' : '검색'}
+                                    </button>
+                                </div>
+
+                                {/* 검색 결과 목록 */}
+                                {searchResults && searchResults.length > 1 && !selectedCar && (
+                                    <div style={{marginTop: '8px', maxHeight: '150px', overflowY: 'auto'}}>
+                                        {searchResults.map((car, idx) => (
+                                            <div
+                                                key={idx}
+                                                onClick={() => applyCar(car)}
+                                                style={{padding: '8px 12px', background: 'white', borderRadius: '6px', marginBottom: '4px', cursor: 'pointer', fontSize: '13px', border: '1px solid #e0e0e0'}}
+                                            >
+                                                <strong>{car.carNum}</strong> &nbsp; {car.carName} &nbsp; | &nbsp; 보험료: {Number(String(car.insurance).replace(/[^0-9]/g, '')).toLocaleString()}원
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* 선택된 차량 정보 */}
+                                {selectedCar && (
+                                    <div style={{marginTop: '8px', padding: '10px 12px', background: '#e8f0fe', borderRadius: '8px', fontSize: '13px', lineHeight: '1.8'}}>
+                                        <div><strong>차량번호:</strong> {selectedCar.carNum}</div>
+                                        <div><strong>차명:</strong> {selectedCar.carName}</div>
+                                        <div><strong>보험료:</strong> {Number(String(selectedCar.insurance).replace(/[^0-9]/g, '')).toLocaleString()}원</div>
+                                        <div style={{textAlign: 'right', marginTop: '4px', fontSize: '11px', color: '#27ae60', fontWeight: '700'}}>✔ 성능보증보험료에 적용됨</div>
+                                    </div>
+                                )}
+
+                                {/* 검색 결과 없음 */}
+                                {searchResults && searchResults.length === 0 && !searchLoading && (
+                                    <div style={{marginTop: '8px', fontSize: '12px', color: '#e74c3c'}}>검색 결과가 없습니다.</div>
+                                )}
+                            </div>
 
                             <div className="form-group">
                                 <label>차량 가격</label>
