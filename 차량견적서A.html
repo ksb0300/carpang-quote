@@ -754,10 +754,18 @@
                 const target = document.querySelector('.main-wrapper');
                 if (!target) return;
                 html2canvas(target, {scale: 2, useCORS: true, backgroundColor: '#eef2f7'}).then(function(canvas) {
-                    var link = document.createElement('a');
-                    link.download = '카팡_견적서_' + new Date().toISOString().slice(0,10) + '.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
+                    canvas.toBlob(function(blob) {
+                        var fileName = '카팡_견적서_' + new Date().toISOString().slice(0,10) + '.png';
+                        var file = new File([blob], fileName, {type: 'image/png'});
+                        if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
+                            navigator.share({files: [file], title: '카팡 견적서'});
+                        } else {
+                            var link = document.createElement('a');
+                            link.download = fileName;
+                            link.href = URL.createObjectURL(blob);
+                            link.click();
+                        }
+                    }, 'image/png');
                 });
             };
 
@@ -839,7 +847,7 @@
                                     <button className="exempt-info-btn" onClick={() => setShowExemptModal(true)}>?</button>
                                 </div>
                                 <div style={{display:'flex', gap:'6px'}}>
-                                    <button className="reset-btn" onClick={handleCapture}>📸 캡처</button>
+                                    <button className="reset-btn" onClick={handleCapture}>📤 공유</button>
                                     <button className="reset-btn" onClick={handleReset}>↺ 초기화</button>
                                 </div>
                             </div>
