@@ -838,8 +838,10 @@
                                     <label htmlFor="taxExempt" className="exempt-label">취등록세 감면대상</label>
                                     <button className="exempt-info-btn" onClick={() => setShowExemptModal(true)}>?</button>
                                 </div>
-                                <button className="reset-btn" onClick={handleReset}>↺ 초기화</button>
-                                <button className="reset-btn" onClick={handleCapture} style={{background: '#2c3e6b'}}>📸 캡처</button>
+                                <div style={{display:'flex', gap:'6px'}}>
+                                    <button className="reset-btn" onClick={handleCapture}>📸 캡처</button>
+                                    <button className="reset-btn" onClick={handleReset}>↺ 초기화</button>
+                                </div>
                             </div>
 
                             {taxExempt && (
