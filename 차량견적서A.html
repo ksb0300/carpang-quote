@@ -13,6 +13,7 @@
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -749,6 +750,17 @@
                 setActiveTab('installment');
             };
 
+            const handleCapture = () => {
+                const target = document.querySelector('.main-wrapper');
+                if (!target) return;
+                html2canvas(target, {scale: 2, useCORS: true, backgroundColor: '#eef2f7'}).then(function(canvas) {
+                    var link = document.createElement('a');
+                    link.download = '카팡_견적서_' + new Date().toISOString().slice(0,10) + '.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            };
+
             const applyToLoan = () => {
                 if (quoteResult) {
                     setLoanAmount(String(quoteResult.total));
@@ -827,6 +839,7 @@
                                     <button className="exempt-info-btn" onClick={() => setShowExemptModal(true)}>?</button>
                                 </div>
                                 <button className="reset-btn" onClick={handleReset}>↺ 초기화</button>
+                                <button className="reset-btn" onClick={handleCapture} style={{background: '#2c3e6b'}}>📸 캡처</button>
                             </div>
 
                             {taxExempt && (
@@ -969,13 +982,27 @@
                             </button>
                             {showBank && (
                                 <div className="bank-info">
-                                    <div className="bank-detail">
-                                        <span className="bank-name">부산은행</span>
-                                        <span className="bank-account">101-2094-4765-02</span>
+                                    <div style={{marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px dashed #dee2e6'}}>
+                                        <div style={{fontSize: '12px', color: '#888', marginBottom: '4px', fontWeight: '700'}}>차대금 + 매도비</div>
+                                        <div className="bank-detail">
+                                            <span className="bank-name" style={{background: '#c0392b'}}>부산은행</span>
+                                            <span className="bank-account">101-2094-4765-02</span>
+                                            <span style={{marginLeft: 'auto', fontWeight: '700', color: '#1a2a4a'}}>{quoteResult ? fmtWon(quoteResult.carPrice + quoteResult.saleFee) + '원' : '-'}</span>
+                                        </div>
+                                        <div className="bank-holder">예금주: 카팡모터스 김상혁</div>
                                     </div>
-                                    <div className="bank-holder">예금주: 카팡모터스 김상혁</div>
+                                    <div>
+                                        <div style={{fontSize: '12px', color: '#888', marginBottom: '4px', fontWeight: '700'}}>이전비 + 보험료</div>
+                                        <div className="bank-detail">
+                                            <span className="bank-name" style={{background: '#f5c500', color: '#3a1d00'}}>카카오뱅크</span>
+                                            <span className="bank-account">3333-16-9197273</span>
+                                            <span style={{marginLeft: 'auto', fontWeight: '700', color: '#1a2a4a'}}>{quoteResult ? fmtWon(quoteResult.transferFee + quoteResult.insurance) + '원' : '-'}</span>
+                                        </div>
+                                        <div className="bank-holder">예금주: 김기택</div>
+                                    </div>
                                 </div>
                             )}
+
                         </div>
 
                         {/* 우측: 할부/리스 탭 */}
