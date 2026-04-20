@@ -750,15 +750,14 @@
                 setActiveTab('installment');
             };
 
-            const handleCapture = () => {
-                const target = document.querySelector('.main-wrapper');
+            const shareCanvas = (target, fileNamePrefix, title) => {
                 if (!target) return;
                 html2canvas(target, {scale: 2, useCORS: true, backgroundColor: '#eef2f7'}).then(function(canvas) {
                     canvas.toBlob(function(blob) {
-                        var fileName = '카팡_견적서_' + new Date().toISOString().slice(0,10) + '.png';
+                        var fileName = fileNamePrefix + '_' + new Date().toISOString().slice(0,10) + '.png';
                         var file = new File([blob], fileName, {type: 'image/png'});
                         if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
-                            navigator.share({files: [file], title: '카팡 견적서'});
+                            navigator.share({files: [file], title: title});
                         } else {
                             var link = document.createElement('a');
                             link.download = fileName;
@@ -767,6 +766,13 @@
                         }
                     }, 'image/png');
                 });
+            };
+
+            const handleCaptureQuote = () => {
+                shareCanvas(document.querySelector('.quote-section'), '카팡_견적서', '카팡 견적서');
+            };
+            const handleCaptureCalc = () => {
+                shareCanvas(document.querySelector('.calc-section'), '카팡_할부견적', '카팡 할부 견적');
             };
 
             const applyToLoan = () => {
@@ -847,7 +853,7 @@
                                     <button className="exempt-info-btn" onClick={() => setShowExemptModal(true)}>?</button>
                                 </div>
                                 <div style={{display:'flex', gap:'6px'}}>
-                                    <button className="reset-btn" onClick={handleCapture}>📤 공유</button>
+                                    <button className="reset-btn" onClick={handleCaptureQuote}>📤 공유</button>
                                     <button className="reset-btn" onClick={handleReset}>↺ 초기화</button>
                                 </div>
                             </div>
@@ -1035,9 +1041,12 @@
                             {/* ===== 할부 탭 ===== */}
                             {activeTab === 'installment' && (
                                 <div className="tab-content">
-                                    <p style={{fontSize: '13px', color: '#7f8c8d', marginBottom: '16px'}}>
-                                        원리금균등상환 방식
-                                    </p>
+                                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: '16px'}}>
+                                        <p style={{fontSize: '13px', color: '#7f8c8d'}}>
+                                            원리금균등상환 방식
+                                        </p>
+                                        <button className="reset-btn" onClick={handleCaptureCalc}>📤 공유</button>
+                                    </div>
 
                                     <div className="form-group">
                                         <label>할부 원금</label>
@@ -1149,6 +1158,9 @@
                             {/* ===== 리스 탭 ===== */}
                             {activeTab === 'lease' && (
                                 <div className="tab-content">
+                                    <div style={{display:'flex', justifyContent:'flex-end', marginBottom: '12px'}}>
+                                        <button className="reset-btn" onClick={handleCaptureCalc}>📤 공유</button>
+                                    </div>
 
                                     <div className="form-group">
                                         <label>차량가격</label>
