@@ -523,6 +523,41 @@
         }
         .exempt-input-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
         .exempt-input-wrap input { flex: 1; }
+        .exempt-options-wrap {
+            background: #f0f4f8;
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .exempt-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e8ecf0;
+            padding: 10px 12px;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+        .exempt-option.active {
+            border-color: #3498db;
+            background: #eaf4fd;
+        }
+        .exempt-option-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6c757d;
+            white-space: nowrap;
+            min-width: 90px;
+        }
+        .exempt-option.active .exempt-option-label { color: #1a6b9a; }
+        .exempt-option .input-suffix input { font-size: 14px; padding: 8px 36px 8px 10px; border-radius: 8px; border: 1.5px solid #e0e0e0; width: 100%; }
+        .exempt-option.active .input-suffix input { border-color: #3498db; background: white; }
+        .exempt-option .input-suffix input:disabled { background: #f5f7f9; color: #ccc; cursor: not-allowed; border-color: #e8ecf0; }
 
         /* 팝업 모달 */
         .modal-overlay {
@@ -601,6 +636,9 @@
             const [leaseMonths, setLeaseMonths] = React.useState('60');
             const [showLeaseSchedule, setShowLeaseSchedule] = React.useState(false);
             const [taxExempt, setTaxExempt] = React.useState(false);
+            const [exemptMode, setExemptMode] = React.useState(null); // 'amount' | 'percent' | 'transfer'
+            const [exemptAmount, setExemptAmount] = React.useState('');
+            const [exemptPercent, setExemptPercent] = React.useState('');
             const [customTransferFee, setCustomTransferFee] = React.useState('');
             const [showExemptModal, setShowExemptModal] = React.useState(false);
 
@@ -644,7 +682,11 @@
             const calculateQuote = () => {
                 const price = Number(carPrice);
                 if (!price) return null;
-                const transferFee = taxExempt ? (Number(customTransferFee) || 0) : Math.floor(price * TRANSFER_RATE);
+                const rawTransferFee = Math.floor(price * TRANSFER_RATE);
+                const transferFee = !taxExempt || !exemptMode ? rawTransferFee
+                    : exemptMode === 'amount' ? Math.max(0, rawTransferFee - (Number(exemptAmount) || 0))
+                    : exemptMode === 'percent' ? Math.floor(rawTransferFee * (1 - (Number(exemptPercent) || 0) / 100))
+                    : (Number(customTransferFee) || 0);
                 const insurance = Number(insurancePrice) || 0;
                 const total = price + FIXED_SALE_FEE + transferFee + insurance;
                 return { carPrice: price, saleFee: FIXED_SALE_FEE, transferFee, insurance, total };
@@ -688,7 +730,11 @@
 
                 const advanceAmount = Number(leaseAdvance) || 0;
                 const residualAmount = leaseType === 'operating' ? carP * (Number(leaseResidual) / 100) : 0;
-                const transferFee = taxExempt ? (Number(customTransferFee) || 0) : carP * 0.075;
+                const rawTransferFee = carP * 0.075;
+                const transferFee = !taxExempt || !exemptMode ? rawTransferFee
+                    : exemptMode === 'amount' ? Math.max(0, rawTransferFee - (Number(exemptAmount) || 0))
+                    : exemptMode === 'percent' ? rawTransferFee * (1 - (Number(exemptPercent) || 0) / 100)
+                    : (Number(customTransferFee) || 0);
                 const leasePrincipal = carP - advanceAmount + transferFee;
                 const r = annualRate / 100 / 12;
 
@@ -847,7 +893,7 @@
                                         id="taxExempt"
                                         className="exempt-checkbox"
                                         checked={taxExempt}
-                                        onChange={(e) => setTaxExempt(e.target.checked)}
+                                        onChange={(e) => { setTaxExempt(e.target.checked); if (!e.target.checked) { setExemptMode(null); setExemptAmount(''); setExemptPercent(''); setCustomTransferFee(''); } }}
                                     />
                                     <label htmlFor="taxExempt" className="exempt-label">취등록세 감면대상</label>
                                     <button className="exempt-info-btn" onClick={() => setShowExemptModal(true)}>?</button>
@@ -859,17 +905,57 @@
                             </div>
 
                             {taxExempt && (
-                                <div className="exempt-input-wrap">
-                                    <label style={{fontSize:'13px', color:'#666', whiteSpace:'nowrap'}}>이전비 직접입력</label>
-                                    <div className="input-suffix" style={{flex:1}}>
-                                        <input
-                                            type="number"
-                                            value={customTransferFee}
-                                            onChange={(e) => setCustomTransferFee(e.target.value)}
-                                            placeholder="이전비 금액 입력"
-                                            inputMode="numeric"
+                                <div className="exempt-options-wrap">
+                                    <div className={`exempt-option${exemptMode === 'amount' ? ' active' : ''}`}
+                                        onClick={() => setExemptMode(exemptMode === 'amount' ? null : 'amount')}>
+                                        <input type="checkbox" className="exempt-checkbox"
+                                            checked={exemptMode === 'amount'}
+                                            onChange={() => {}}
                                         />
-                                        <span className="suffix">원</span>
+                                        <span className="exempt-option-label">감면금액</span>
+                                        <div className="input-suffix" style={{flex:1}} onClick={(e) => e.stopPropagation()}>
+                                            <input type="number" value={exemptAmount}
+                                                onChange={(e) => setExemptAmount(e.target.value)}
+                                                placeholder="감면금액 입력"
+                                                disabled={exemptMode !== 'amount'}
+                                                inputMode="numeric"
+                                            />
+                                            <span className="suffix">원</span>
+                                        </div>
+                                    </div>
+                                    <div className={`exempt-option${exemptMode === 'percent' ? ' active' : ''}`}
+                                        onClick={() => setExemptMode(exemptMode === 'percent' ? null : 'percent')}>
+                                        <input type="checkbox" className="exempt-checkbox"
+                                            checked={exemptMode === 'percent'}
+                                            onChange={() => {}}
+                                        />
+                                        <span className="exempt-option-label">감면 퍼센트</span>
+                                        <div className="input-suffix" style={{flex:1}} onClick={(e) => e.stopPropagation()}>
+                                            <input type="number" value={exemptPercent}
+                                                onChange={(e) => setExemptPercent(e.target.value)}
+                                                placeholder="감면율 입력"
+                                                disabled={exemptMode !== 'percent'}
+                                                inputMode="numeric"
+                                            />
+                                            <span className="suffix">%</span>
+                                        </div>
+                                    </div>
+                                    <div className={`exempt-option${exemptMode === 'transfer' ? ' active' : ''}`}
+                                        onClick={() => setExemptMode(exemptMode === 'transfer' ? null : 'transfer')}>
+                                        <input type="checkbox" className="exempt-checkbox"
+                                            checked={exemptMode === 'transfer'}
+                                            onChange={() => {}}
+                                        />
+                                        <span className="exempt-option-label">이전비 직접입력</span>
+                                        <div className="input-suffix" style={{flex:1}} onClick={(e) => e.stopPropagation()}>
+                                            <input type="number" value={customTransferFee}
+                                                onChange={(e) => setCustomTransferFee(e.target.value)}
+                                                placeholder="이전비 금액 입력"
+                                                disabled={exemptMode !== 'transfer'}
+                                                inputMode="numeric"
+                                            />
+                                            <span className="suffix">원</span>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -967,11 +1053,8 @@
                                         <span className="value">{quoteResult.saleFee.toLocaleString()} 원</span>
                                     </div>
                                     <div className="result-row">
-                                        <span className="label">이전비 {taxExempt ? '(직접입력)' : '(7.5%)'}</span>
+                                        <span className="label">이전비 {taxExempt && exemptMode === 'amount' ? '(감면금액 차감)' : taxExempt && exemptMode === 'percent' ? `(${exemptPercent}% 감면)` : taxExempt && exemptMode === 'transfer' ? '(직접입력)' : '(7.5%)'}</span>
                                         <span className="value">{quoteResult.transferFee.toLocaleString()} 원</span>
-                                    </div>
-                                    <div className="result-row sub-note">
-                                        ※ 세금납부 후 차액은 환급됩니다
                                     </div>
                                     <div className="result-row">
                                         <span className="label">성능보증보험료</span>
@@ -999,7 +1082,6 @@
                             {showBank && (
                                 <div className="bank-info">
                                     <div style={{marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px dashed #dee2e6'}}>
-                                        <div style={{fontSize: '12px', color: '#888', marginBottom: '4px', fontWeight: '700'}}>차대금 + 매도비</div>
                                         <div className="bank-detail">
                                             <span className="bank-name" style={{background: '#c0392b'}}>부산은행</span>
                                             <span className="bank-account">101-2094-4765-02</span>
@@ -1008,7 +1090,6 @@
                                         <div className="bank-holder">예금주: 카팡모터스 김상혁</div>
                                     </div>
                                     <div>
-                                        <div style={{fontSize: '12px', color: '#888', marginBottom: '4px', fontWeight: '700'}}>이전비 + 보험료</div>
                                         <div className="bank-detail">
                                             <span className="bank-name" style={{background: '#f5c500', color: '#3a1d00'}}>카카오뱅크</span>
                                             <span className="bank-account">3333-16-9197273</span>
