@@ -1,8 +1,8 @@
-const CACHE_NAME = 'carpang-quote-v1';
+const CACHE_NAME = 'tierone-quote-v2';
 const urlsToCache = [
   './',
   './차량견적서A.html',
-  './카팡로고.png',
+  './tierone-logo.png',
   './manifest.json',
   'https://unpkg.com/react@17/umd/react.development.js',
   'https://unpkg.com/react-dom@17/umd/react-dom.development.js',
@@ -27,6 +27,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => response || fetch(event.request))
+    fetch(event.request).then((res) => {
+      if (event.request.method === 'GET' && res.ok && new URL(event.request.url).origin === self.location.origin) {
+        const copy = res.clone(); caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
+      }
+      return res;
+    }).catch(() => caches.match(event.request))
   );
 });

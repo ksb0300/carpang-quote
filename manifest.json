@@ -1,16 +1,16 @@
 {
-  "name": "카팡 차량 견적서",
-  "short_name": "카팡견적서",
-  "description": "CARPANG 차량 견적 및 할부/리스 계산기",
+  "name": "TierONE 차량 견적서",
+  "short_name": "티어원견적서",
+  "description": "TierONE 차량 견적 및 할부/리스 계산기",
   "start_url": "./차량견적서A.html",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#1a2a4a",
-  "theme_color": "#1a2a4a",
+  "background_color": "#2a1d45",
+  "theme_color": "#2a1d45",
   "icons": [
     {
-      "src": "카팡로고.png",
-      "sizes": "192x192",
+      "src": "tierone-logo.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a2a4a">
+    <meta name="theme-color" content="#2a1d45">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="카팡견적서">
+    <meta name="apple-mobile-web-app-title" content="티어원견적서">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="카팡로고.png">
-    <title>카팡 차량 견적서</title>
+    <link rel="apple-touch-icon" href="tierone-logo.png">
+    <title>TierONE 차량 견적서</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
@@ -32,10 +32,10 @@
             justify-content: center;
             gap: 18px;
             padding: 22px 24px;
-            background: linear-gradient(135deg, #1a2a4a 0%, #2c3e6b 50%, #1a2a4a 100%);
+            background: linear-gradient(135deg, #2a1d45 0%, #5b3a93 50%, #2a1d45 100%);
             border-radius: 16px 16px 0 0;
             color: white;
-            box-shadow: 0 4px 15px rgba(26, 42, 74, 0.3);
+            box-shadow: 0 4px 15px rgba(42, 29, 69, 0.3);
         }
         .header .logo-wrap {
             width: 60px;
@@ -87,10 +87,10 @@
         .section-title {
             font-size: 20px;
             font-weight: 700;
-            color: #1a2a4a;
+            color: #2a1d45;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 3px solid #2c3e6b;
+            border-bottom: 3px solid #5b3a93;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -98,7 +98,7 @@
         .section-icon {
             width: 28px;
             height: 28px;
-            background: #2c3e6b;
+            background: #5b3a93;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -114,11 +114,11 @@
             padding: 18px;
             background: linear-gradient(135deg, #f0f4f8, #e8edf3);
             border-radius: 12px;
-            border: 2px solid #2c3e6b;
+            border: 2px solid #5b3a93;
         }
         .bank-info h3 {
             font-size: 15px;
-            color: #1a2a4a;
+            color: #2a1d45;
             margin-bottom: 10px;
             padding-bottom: 8px;
             border-bottom: 1px solid #c8d0dc;
@@ -130,7 +130,7 @@
             margin-bottom: 6px;
         }
         .bank-name {
-            background: #2c3e6b;
+            background: #5b3a93;
             color: white;
             padding: 4px 10px;
             border-radius: 6px;
@@ -140,7 +140,7 @@
         .bank-account {
             font-size: 18px;
             font-weight: 800;
-            color: #1a2a4a;
+            color: #2a1d45;
             letter-spacing: 0.5px;
         }
         .bank-holder {
@@ -179,7 +179,7 @@
         }
         .tab-btn.active {
             background: #f8f9fb;
-            color: #2c3e6b;
+            color: #5b3a93;
         }
         .tab-btn.active::after {
             content: '';
@@ -188,7 +188,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: #2c3e6b;
+            background: #5b3a93;
         }
         .tab-btn:not(.active):hover {
             background: #dde2ea;
@@ -222,7 +222,7 @@
         }
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #2c3e6b;
+            border-color: #5b3a93;
             box-shadow: 0 0 0 3px rgba(44, 62, 107, 0.1);
         }
         .input-suffix {
@@ -259,7 +259,7 @@
         }
         .result-card h3 {
             font-size: 17px;
-            color: #1a2a4a;
+            color: #2a1d45;
             margin-bottom: 14px;
             padding-bottom: 8px;
             border-bottom: 1px solid #dee2e6;
@@ -277,7 +277,7 @@
         }
         .result-row .value {
             font-weight: 600;
-            color: #1a2a4a;
+            color: #2a1d45;
         }
         .result-row.sub-note {
             font-size: 12px;
@@ -299,10 +299,10 @@
             font-weight: 800;
         }
         .result-total .label {
-            color: #1a2a4a;
+            color: #2a1d45;
         }
         .result-total .value {
-            color: #2c3e6b;
+            color: #5b3a93;
         }
 
         /* 할부/리스 결과 */
@@ -311,11 +311,11 @@
             padding: 18px;
             background: white;
             border-radius: 12px;
-            border: 2px solid #2c3e6b;
+            border: 2px solid #5b3a93;
         }
         .loan-result h3 {
             font-size: 16px;
-            color: #2c3e6b;
+            color: #5b3a93;
             margin-bottom: 12px;
         }
         .loan-row {
@@ -331,7 +331,7 @@
         .loan-highlight {
             margin-top: 12px;
             padding: 14px;
-            background: linear-gradient(135deg, #1a2a4a, #2c3e6b);
+            background: linear-gradient(135deg, #2a1d45, #5b3a93);
             border-radius: 10px;
             text-align: center;
             color: white;
@@ -364,7 +364,7 @@
         .calc-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #1a2a4a, #2c3e6b);
+            background: linear-gradient(135deg, #2a1d45, #5b3a93);
             color: white;
             border: none;
             border-radius: 10px;
@@ -378,7 +378,7 @@
             transform: scale(0.98);
         }
         .calc-btn:hover {
-            box-shadow: 0 4px 12px rgba(26, 42, 74, 0.4);
+            box-shadow: 0 4px 12px rgba(42, 29, 69, 0.4);
         }
         .apply-btns {
             display: flex;
@@ -428,7 +428,7 @@
             font-size: 11px;
         }
         .schedule-table th {
-            background: #2c3e6b;
+            background: #5b3a93;
             color: white;
             padding: 8px 4px;
             text-align: center;
@@ -597,7 +597,8 @@
             const [showBank, setShowBank] = React.useState(false);
 
             // 차량번호 검색
-            const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuw-AvO0VJfvESgdDIipzTUvGd66RR1ONo9XzgLvFI5FNgIQmgUHgtfDnxrRGiMNfoFQ/exec';
+            // 차량 검색은 TierONE 업무관리 재고에서 (차량번호·차명·성능보험료만) — 예전 구글시트 대신
+            const APPS_SCRIPT_URL = 'https://fwqtyyjhfewpxihpaasu.supabase.co/functions/v1/quote';
             const [searchKeyword, setSearchKeyword] = React.useState('');
             const [searchResults, setSearchResults] = React.useState(null);
             const [searchLoading, setSearchLoading] = React.useState(false);
@@ -815,10 +816,10 @@
             };
 
             const handleCaptureQuote = () => {
-                shareCanvas(document.querySelector('.quote-section'), '카팡_견적서', '카팡 견적서');
+                shareCanvas(document.querySelector('.quote-section'), '티어원_견적서', 'TierONE 견적서');
             };
             const handleCaptureCalc = () => {
-                shareCanvas(document.querySelector('.calc-section'), '카팡_할부견적', '카팡 할부 견적');
+                shareCanvas(document.querySelector('.calc-section'), '티어원_할부견적', 'TierONE 할부 견적');
             };
 
             const applyToLoan = () => {
@@ -870,10 +871,10 @@
                     {/* 헤더 */}
                     <div className="header">
                         <div className="logo-wrap" onClick={handleLogoTap} style={{cursor: 'pointer'}}>
-                            <img src="카팡로고.png" alt="카팡 로고" />
+                            <img src="tierone-logo.png" alt="TierONE 로고" />
                         </div>
                         <div className="header-text">
-                            <h1>CARPANG 견적서</h1>
+                            <h1>TierONE 견적서</h1>
                             <p>{adminMode ? '관리자 모드' : '신뢰할 수 있는 중고차 거래 파트너'}</p>
                         </div>
                     </div>
@@ -962,7 +963,7 @@
 
                             {/* 차량번호 검색 */}
                             <div className="form-group" style={{background: '#f0f4f8', padding: '12px', borderRadius: '10px', marginBottom: '12px'}}>
-                                <label style={{fontSize: '13px', fontWeight: '700', color: '#1a2a4a', marginBottom: '8px'}}>🔍 차량번호 검색</label>
+                                <label style={{fontSize: '13px', fontWeight: '700', color: '#2a1d45', marginBottom: '8px'}}>🔍 차량번호 검색</label>
                                 <div style={{display: 'flex', gap: '8px'}}>
                                     <input
                                         type="text"
@@ -976,7 +977,7 @@
                                     <button
                                         onClick={searchCar}
                                         disabled={searchLoading}
-                                        style={{padding: '10px 18px', background: '#1a2a4a', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap'}}
+                                        style={{padding: '10px 18px', background: '#2a1d45', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap'}}
                                     >
                                         {searchLoading ? '검색중...' : '검색'}
                                     </button>
@@ -1085,15 +1086,15 @@
                                         <div className="bank-detail">
                                             <span className="bank-name" style={{background: '#c0392b'}}>부산은행</span>
                                             <span className="bank-account">101-2094-4765-02</span>
-                                            <span style={{marginLeft: 'auto', fontWeight: '700', color: '#1a2a4a'}}>{quoteResult ? fmtWon(quoteResult.carPrice + quoteResult.saleFee) + '원' : '-'}</span>
+                                            <span style={{marginLeft: 'auto', fontWeight: '700', color: '#2a1d45'}}>{quoteResult ? fmtWon(quoteResult.carPrice + quoteResult.saleFee) + '원' : '-'}</span>
                                         </div>
-                                        <div className="bank-holder">예금주: 카팡모터스 김상혁</div>
+                                        <div className="bank-holder">예금주: 티어원 김상혁</div>
                                     </div>
                                     <div>
                                         <div className="bank-detail">
                                             <span className="bank-name" style={{background: '#f5c500', color: '#3a1d00'}}>카카오뱅크</span>
                                             <span className="bank-account">3333-16-9197273</span>
-                                            <span style={{marginLeft: 'auto', fontWeight: '700', color: '#1a2a4a'}}>{quoteResult ? fmtWon(quoteResult.transferFee + quoteResult.insurance) + '원' : '-'}</span>
+                                            <span style={{marginLeft: 'auto', fontWeight: '700', color: '#2a1d45'}}>{quoteResult ? fmtWon(quoteResult.transferFee + quoteResult.insurance) + '원' : '-'}</span>
                                         </div>
                                         <div className="bank-holder">예금주: 김기택</div>
                                     </div>
@@ -1393,7 +1394,7 @@
                     </div>
 
                     <div className="footer">
-                        &copy; CARPANG. 본 견적서는 참고용이며, 실제 금액은 상이할 수 있습니다.
+                        &copy; TierONE. 본 견적서는 참고용이며, 실제 금액은 상이할 수 있습니다.
                     </div>
                 </div>
             );

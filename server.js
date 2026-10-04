@@ -48,7 +48,7 @@ server.listen(PORT, '0.0.0.0', () => {
 
   console.log('');
   console.log('===========================================');
-  console.log('  CARPANG 견적서 서버가 시작되었습니다!');
+  console.log('  TierONE 견적서 서버가 시작되었습니다!');
   console.log('===========================================');
   console.log('');
   console.log('  PC에서 접속:');
